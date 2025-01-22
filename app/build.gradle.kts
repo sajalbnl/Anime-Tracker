@@ -75,6 +75,10 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
 
+    // Exoplayer Dependency
+    implementation ("com.google.android.exoplayer:exoplayer:2.19.1")
+    implementation ("com.pierfrancescosoffritti.androidyoutubeplayer:core:11.1.0")
+
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     //Coroutines

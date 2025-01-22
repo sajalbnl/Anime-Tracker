@@ -20,7 +20,7 @@ data class Data(
     val producers: List<Producer>,
     val rank: Int,
     val rating: String,
-    val score: Int,
+    val score: Double,
     val scored_by: Int,
     val season: String,
     val source: String,

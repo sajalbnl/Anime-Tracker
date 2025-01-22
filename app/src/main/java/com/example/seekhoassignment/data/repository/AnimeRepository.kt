@@ -1,5 +1,6 @@
 package com.example.seekhoassignment.data.repository
 
+import android.util.Log
 import com.example.seekhoassignment.data.datasource.ApiService
 import com.example.seekhoassignment.data.model.AnimeData
 import com.example.seekhoassignment.data.model.AnimeDetailsData

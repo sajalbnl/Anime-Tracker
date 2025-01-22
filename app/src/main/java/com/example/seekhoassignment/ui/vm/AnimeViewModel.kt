@@ -29,13 +29,11 @@ class AnimeViewModel @Inject constructor(
     // Function to fetch the list of anime
     fun fetchAnimeList() {
         viewModelScope.launch {
-            try {
+
                 repository.fetchAnime().collect { animeData ->
                     _animeListState.value = animeData
                 }
-            } catch (e: Exception) {
-                _errorState.value = e.message
-            }
+
         }
     }
 
