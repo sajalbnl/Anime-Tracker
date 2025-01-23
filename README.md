@@ -5,6 +5,7 @@
 2- Network Dependency: Users will have a stable internet connection for streaming and downloading.
 
 - Features Implemented
+  
 1- Home Screen: Just Static Screen for app info.
   
 2- Top Anime Screen: Displays trending and recommended anime based on user activity.
