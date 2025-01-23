@@ -28,7 +28,7 @@ class MainActivity : ComponentActivity() {
     private lateinit var currentDestination: MutableState<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
         setContent {
             val navController = rememberNavController()
             SeekhoAssignmentTheme {
@@ -39,7 +39,7 @@ class MainActivity : ComponentActivity() {
                     navController.addOnDestinationChangedListener { _, destination, _ ->
                         currentDestination.value = destination.route ?: ""
                     }
-                    val showTopBar = currentDestination.value in listOf("home")
+                    val showTopBar = currentDestination.value in listOf("home","topAnime")
                     val showBottomBar=currentDestination.value in listOf("home","topAnime")
 
                     Scaffold(

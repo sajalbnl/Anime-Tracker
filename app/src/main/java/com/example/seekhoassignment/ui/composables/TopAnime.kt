@@ -132,7 +132,7 @@ fun AnimeCard(anime: Data?){
                     contentDescription = "",
                     contentScale = ContentScale.Crop,
                     modifier = Modifier
-                        .width(200.dp)
+                        .width(200.dp).height(250.dp)
                 )
 
                 Row( verticalAlignment = Alignment.CenterVertically,

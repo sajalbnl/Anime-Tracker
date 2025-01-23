@@ -84,7 +84,7 @@ fun BottomBar(navController: NavHostController) {
 
     Row(
         modifier = Modifier.background(Color("#000000".toColorInt()))
-            .padding(start=10.dp,end=10.dp,bottom=50.dp)
+            .padding(start=10.dp,end=10.dp,bottom=30.dp)
             .clip(RoundedCornerShape(20.dp))
             .background(Color("#000000".toColorInt()))
             .fillMaxWidth().border(BorderStroke(1.dp, Color("#000000".toColorInt())),
@@ -163,7 +163,7 @@ fun AddItem(
 @Composable
 fun TopBar(navController: NavController){
     val context = LocalContext.current
-    Row(modifier= Modifier.fillMaxWidth().background(Color("#000000".toColorInt())).padding(top=50.dp,start=30.dp,end=30.dp,bottom=10.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
+    Row(modifier= Modifier.fillMaxWidth().background(Color("#000000".toColorInt())).padding(top=20.dp,start=30.dp,end=30.dp,bottom=15.dp), horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = "Seekho",
             modifier = Modifier.padding(start=10.dp,top=5.dp),

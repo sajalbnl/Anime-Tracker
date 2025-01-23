@@ -26,6 +26,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
+import androidx.core.view.WindowCompat
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 
@@ -52,12 +53,16 @@ fun AnimatedSplashScreen(navController: NavHostController) {
 fun Splash(alpha: Float) {
     val context = LocalContext.current
     val window = (context as Activity).window
-//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//        window.statusBarColor = Color("#000000".toColorInt()).toArgb() // Set the status bar color
-//    }
-//    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//        window.navigationBarColor = Color("#000000".toColorInt()).toArgb() // Set the navigation bar color
-//    }
+    // Set the status bar and navigation bar colors
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        window.statusBarColor = Color("#000000".toColorInt()).toArgb()
+        window.navigationBarColor = Color("#000000".toColorInt()).toArgb()
+    }
+
+    // Ensure status bar text remains white
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
+    }
     Box(
         modifier = Modifier
             .background(Color("#000000".toColorInt()))

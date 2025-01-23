@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -73,14 +74,10 @@ import com.example.seekhoassignment.ui.theme.SeekhoAssignmentTheme
 import com.example.seekhoassignment.ui.vm.AnimeViewModel
 import com.example.seekhoassignment.utils.publicsansBold
 import com.example.seekhoassignment.utils.publicsansSemiBold
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
-import com.google.android.exoplayer2.util.Util
+
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.YouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -91,8 +88,10 @@ class AnimeDetailsActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-        WindowCompat.setDecorFitsSystemWindows(window, true)
-
+        // Ensure the system windows fit correctly
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            WindowCompat.getInsetsController(window, window.decorView)?.isAppearanceLightStatusBars = false
+        }
 
         setContent {
             SeekhoAssignmentTheme {
@@ -115,6 +114,10 @@ class AnimeDetailsActivity : ComponentActivity() {
         val context = (LocalContext.current as Activity)
         val animeViewModel = hiltViewModel<AnimeViewModel>()
         val animeDetails=animeViewModel.animeDetailsState.collectAsState()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.statusBarColor = Color("#333333".toColorInt()).toArgb()
+            window.navigationBarColor = Color("#333333".toColorInt()).toArgb()
+        }
 
         LaunchedEffect(Unit) {
             animeViewModel.fetchAnimeDetails(animeId)
@@ -125,11 +128,12 @@ class AnimeDetailsActivity : ComponentActivity() {
 
         Column(modifier = Modifier.fillMaxSize().background(Color("#333333".toColorInt())).padding(10.dp)) {
             if(animeDetails.value==null){
+                Spacer(modifier = Modifier.padding(top=15.dp))
                 AnimeDetailsShimmer()
             }else {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(start = 10.dp, top = 15.dp, bottom = 15.dp)
+                    modifier = Modifier.padding(start = 10.dp, top = 35.dp, bottom = 15.dp)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.arrow_back),
@@ -307,7 +311,7 @@ class AnimeDetailsActivity : ComponentActivity() {
 @Composable
 fun AnimeDetailsShimmer() {
     val items = (1..1).map { "Item $it" }
-    Box(modifier = Modifier.fillMaxSize().padding(top = 20.dp)) {
+    Box(modifier = Modifier.fillMaxSize().padding(top = 40.dp)) {
         BoxWithConstraints(modifier = Modifier.fillMaxWidth()) {
             FlowRow(
                 modifier = Modifier
