@@ -49,9 +49,4 @@ class AnimeViewModel @Inject constructor(
             }
         }
     }
-
-    // Clear the error state after handling
-    fun clearErrorState() {
-        _errorState.value = null
-    }
 }

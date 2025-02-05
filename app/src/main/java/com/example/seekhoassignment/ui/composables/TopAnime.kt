@@ -6,7 +6,6 @@ import androidx.navigation.NavController
 
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -68,8 +67,6 @@ import com.example.seekhoassignment.utils.publicsansSemiBold
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun TopAnime(navController: NavController) {
-
-    val context = LocalContext.current
     val animeViewModel = hiltViewModel<AnimeViewModel>()
     val animeList=animeViewModel.animeListState.collectAsState()
 

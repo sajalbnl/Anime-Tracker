@@ -2,8 +2,6 @@ package com.example.seekhoassignment.ui.activity
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.content.Intent
-import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -74,8 +72,6 @@ import com.example.seekhoassignment.ui.theme.SeekhoAssignmentTheme
 import com.example.seekhoassignment.ui.vm.AnimeViewModel
 import com.example.seekhoassignment.utils.publicsansBold
 import com.example.seekhoassignment.utils.publicsansSemiBold
-
-import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.PlayerConstants
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.listeners.AbstractYouTubePlayerListener
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.views.YouTubePlayerView

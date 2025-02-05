@@ -3,7 +3,6 @@ package com.example.seekhoassignment
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -47,7 +46,6 @@ import com.example.seekhoassignment.ui.composables.Home
 import com.example.seekhoassignment.ui.composables.TopAnime
 import com.example.seekhoassignment.utils.publicsansBold
 import com.example.seekhoassignment.utils.publicsansRegular
-import com.example.seekhoassignment.utils.publicsansSemiBold
 
 @Composable
 fun NavHostContainer(
