@@ -1,6 +1,8 @@
 package com.example.seekhoassignment.ui.composables
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,6 +32,7 @@ import com.example.seekhoassignment.R
 import com.example.seekhoassignment.utils.publicsansBold
 import com.example.seekhoassignment.utils.publicsansSemiBold
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun Home(navController: NavController) {
 
