@@ -2,8 +2,6 @@ package com.example.seekhoassignment.ui.composables
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
-
-
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
@@ -14,6 +12,7 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import com.example.seekhoassignment.R
@@ -34,11 +33,20 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
@@ -51,6 +59,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -64,20 +74,69 @@ import com.example.seekhoassignment.data.model.Data
 import com.example.seekhoassignment.ui.activity.AnimeDetailsActivity
 import com.example.seekhoassignment.ui.vm.AnimeViewModel
 import com.example.seekhoassignment.utils.publicsansBold
+import com.example.seekhoassignment.utils.publicsansRegular
 import com.example.seekhoassignment.utils.publicsansSemiBold
 
-@OptIn(ExperimentalLayoutApi::class)
+@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TopAnime(navController: NavController) {
     val animeViewModel = hiltViewModel<AnimeViewModel>()
-    val animeList=animeViewModel.animeListState.collectAsState()
+    val animeList=animeViewModel.filteredAnimeList.collectAsState()
+    var searchPlanText by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         animeViewModel.fetchAnimeList()
     }
 
     Column (modifier = Modifier.fillMaxSize().background(Color("#000000".toColorInt()))){
-        if (animeList.value?.data == null) {
+        Card(
+            border = BorderStroke(
+                1.dp, Color("#C9C9C9".toColorInt())
+            ),
+            colors = CardDefaults.cardColors(
+                containerColor = Transparent,
+            ),
+            modifier = Modifier
+                .padding(start = 20.dp, end = 20.dp, top = 10.dp,bottom=10.dp)
+                .fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp)
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextField(value = searchPlanText,
+                    onValueChange = {
+                        searchPlanText = it
+                        animeViewModel.searchAnime(searchPlanText)
+                    },
+                    leadingIcon = {
+                        Image(
+                            painterResource(R.drawable.search_icon),
+                            contentDescription = "",
+                            modifier = Modifier.width(15.dp)
+                        )
+                    },
+                    modifier = Modifier.weight(1f).height(60.dp),
+                    colors = TextFieldDefaults.textFieldColors(
+                        focusedTextColor = Color("#666666".toColorInt()),
+                        disabledTextColor = Transparent,
+                        //    backgroundColor = Transparent,
+                        focusedIndicatorColor = Transparent,
+                        unfocusedIndicatorColor = Transparent,
+                        disabledIndicatorColor = Transparent
+                    ),
+                    maxLines = 1,
+                    singleLine = true,
+                    placeholder = {
+                        Text(
+                            "Search Anime",
+                            fontSize = 11.sp,
+                            fontFamily = publicsansRegular,
+                            color = Color("#666666".toColorInt())
+                        )
+                    })
+            }
+        }
+        if (animeList.value == emptyList<Data>()) {
             ExcitingDealsShimmerLoaderView()
         } else {
             LazyColumn {
@@ -87,9 +146,7 @@ fun TopAnime(navController: NavController) {
                             .fillMaxWidth()
                             .padding(top = 20.dp)
                     ) {
-
-
-                        animeList.value?.data?.forEach{ anime->
+                        animeList.value?.forEach{ anime->
                             AnimeCard(anime)
                         }
                     }
