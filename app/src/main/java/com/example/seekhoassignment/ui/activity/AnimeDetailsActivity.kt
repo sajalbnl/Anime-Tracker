@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.os.Build
 import android.os.Bundle
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -35,6 +36,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -69,8 +71,11 @@ import androidx.navigation.compose.rememberNavController
 import coil3.compose.rememberAsyncImagePainter
 import coil3.request.ImageRequest
 import coil3.request.crossfade
+import com.example.seekhoassignment.ui.composables.AnimeCard
+import com.example.seekhoassignment.ui.composables.ExcitingDealsShimmerLoaderView
 import com.example.seekhoassignment.ui.theme.SeekhoAssignmentTheme
 import com.example.seekhoassignment.ui.vm.AnimeViewModel
+import com.example.seekhoassignment.utils.network.ApiState
 import com.example.seekhoassignment.utils.publicsansBold
 import com.example.seekhoassignment.utils.publicsansSemiBold
 import com.pierfrancescosoffritti.androidyoutubeplayer.core.player.YouTubePlayer
@@ -124,185 +129,190 @@ class AnimeDetailsActivity : ComponentActivity() {
 
         val lifecycle = LocalLifecycleOwner.current.lifecycle
 
-
         Column(modifier = Modifier.fillMaxSize().background(Color("#333333".toColorInt())).padding(10.dp)) {
-            if(animeDetails.value==null){
-                Spacer(modifier = Modifier.padding(top=15.dp))
-                AnimeDetailsShimmer()
-            }else {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(start = 10.dp, top = 35.dp, bottom = 15.dp)
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.arrow_back),
-                        modifier = Modifier
-                            .clickable(indication = null,
-                                interactionSource = remember { MutableInteractionSource() }) {
-
-                                context.finish()
-                            }
-                            .size(20.dp),
-                        contentDescription = null,
-                        tint = Color("#ffffff".toColorInt())
-                    )
-
-
-                    Text(
-                        text = animeDetails.value?.data?.title.toString(),
-                        fontFamily = publicsansBold,
-                        fontSize = 25.sp,
-                        modifier = Modifier.padding(start = 15.dp, top = 10.dp, bottom = 10.dp),
-                        color = Color("#ffffff".toColorInt())
-                    )
+        animeDetails.value.let {
+            when(it){
+                is ApiState.Loading -> {
+                    AnimeDetailsShimmer()
                 }
-                if(animeDetails.value?.data?.trailer?.youtube_id==null){
+                is ApiState.Error -> {
+                    Toast.makeText(context,"Error In Loading", Toast.LENGTH_SHORT).show()
+                }
+                is ApiState.Success -> {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.padding(start = 10.dp, top = 35.dp, bottom = 15.dp)
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.arrow_back),
+                                    modifier = Modifier
+                                        .clickable(indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }) {
 
-                    val painter =
-                        rememberAsyncImagePainter(
-                            ImageRequest.Builder(
-                                LocalContext.current
-                            )
-                                .data(data = animeDetails.value?.data?.images?.jpg?.large_image_url)
-                                .apply(block = fun ImageRequest.Builder.() {
-                                    crossfade(true)
-                                }).build()
-                        )
-
-                    Image(
-                        painter,
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .fillMaxWidth().clip(shape = RoundedCornerShape(16.dp))
-                            .padding(8.dp).height(220.dp)
-                    )
+                                            context.finish()
+                                        }
+                                        .size(20.dp),
+                                    contentDescription = null,
+                                    tint = Color("#ffffff".toColorInt())
+                                )
 
 
-                }else {
-                    AndroidView(
-                        factory = { context ->
-                            YouTubePlayerView(context).apply {
-                                lifecycle.addObserver(this)
+                                Text(
+                                    text = it.data?.data?.title.toString(),
+                                    fontFamily = publicsansBold,
+                                    fontSize = 25.sp,
+                                    modifier = Modifier.padding(start = 15.dp, top = 10.dp, bottom = 10.dp),
+                                    color = Color("#ffffff".toColorInt())
+                                )
+                            }
+                            if(it.data?.data?.trailer?.youtube_id==null){
 
-                                addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
-                                    override fun onReady(youTubePlayer: YouTubePlayer) {
-                                        youTubePlayer.loadVideo(
-                                            animeDetails.value?.data?.trailer?.youtube_id.toString(),
-                                            0f
+                                val painter =
+                                    rememberAsyncImagePainter(
+                                        ImageRequest.Builder(
+                                            LocalContext.current
+                                        )
+                                            .data(data = it.data?.data?.images?.jpg?.large_image_url)
+                                            .apply(block = fun ImageRequest.Builder.() {
+                                                crossfade(true)
+                                            }).build()
+                                    )
+
+                                Image(
+                                    painter,
+                                    contentDescription = "",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .fillMaxWidth().clip(shape = RoundedCornerShape(16.dp))
+                                        .padding(8.dp).height(220.dp)
+                                )
+
+
+                            }else {
+                                AndroidView(
+                                    factory = { context ->
+                                        YouTubePlayerView(context).apply {
+                                            lifecycle.addObserver(this)
+
+                                            addYouTubePlayerListener(object : AbstractYouTubePlayerListener() {
+                                                override fun onReady(youTubePlayer: YouTubePlayer) {
+                                                    youTubePlayer.loadVideo(
+                                                        it.data?.data?.trailer?.youtube_id.toString(),
+                                                        0f
+                                                    )
+                                                }
+                                            })
+                                        }
+                                    },
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .clip(shape = RoundedCornerShape(16.dp))
+                                        .padding(8.dp).height(220.dp)
+                                )
+                            }
+
+                            Row( verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier= Modifier.padding(top=10.dp, start = 10.dp)) {
+
+                                Image(
+                                    painter=painterResource(R.drawable.star),
+                                    contentDescription = null,
+                                    modifier = Modifier.padding(end=10.dp).size(20.dp)
+                                )
+
+                                Spacer(modifier = Modifier.width(5.dp))
+                                Text(
+                                    text = it.data?.data?.score.toString() + "/10",
+                                    fontFamily = publicsansBold,
+                                    maxLines = 1,
+                                    color = Color("#ffffff".toColorInt())
+                                )
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                Icon(
+                                    painter=painterResource(R.drawable.episodes),
+                                    contentDescription = null,
+                                    tint = Color("#ffffff".toColorInt()),
+                                    modifier = Modifier.padding(end=10.dp).size(16.dp)
+                                )
+                                Text(
+                                    text = it.data?.data?.episodes.toString() + " Ep",
+                                    fontFamily = publicsansBold,
+                                    maxLines = 1,
+                                    modifier = Modifier.padding(end=10.dp),
+                                    color = Color("#ffffff".toColorInt())
+                                )
+                            }
+
+                            val painter =
+                                rememberAsyncImagePainter(
+                                    ImageRequest.Builder(
+                                        LocalContext.current
+                                    )
+                                        .data(data = it.data?.data?.images?.jpg?.image_url)
+                                        .apply(block = fun ImageRequest.Builder.() {
+                                            crossfade(true)
+                                        }).build()
+                                )
+                            Row(modifier=Modifier.fillMaxWidth().padding(top=10.dp),
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,) {
+                                Image(
+                                    painter,
+                                    contentDescription = "",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier
+                                        .weight(0.3f).padding(start = 10.dp)
+                                )
+                                Text(
+                                    text = it.data?.data?.synopsis.toString(),
+                                    fontFamily = publicsansSemiBold,
+                                    maxLines = 8,
+                                    fontSize = 12.sp,
+                                    modifier = Modifier.weight(0.7f).padding(start = 10.dp, end = 10.dp),
+                                    color = Color("#ffffff".toColorInt())
+                                )
+                            }
+                            Row(
+                                modifier = Modifier.padding(top=10.dp)
+                                    .horizontalScroll(rememberScrollState())
+                                    .padding(horizontal = 8.dp),
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                it.data?.data?.genres?.forEachIndexed { index, title ->
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .padding(horizontal = 5.dp)
+                                            .background(
+                                                color = Color("#000000".toColorInt()),
+                                                shape = RoundedCornerShape(60)
+                                            )
+                                            .border(
+                                                BorderStroke(1.dp, Color("#333333".toColorInt())),
+                                                RoundedCornerShape(60)
+                                            )
+                                    ) {
+                                        Text(
+                                            text = title.name,
+                                            modifier = Modifier.padding(
+                                                start = 12.dp,
+                                                end = 12.dp,
+                                                top = 10.dp,
+                                                bottom = 10.dp
+                                            ),
+                                            fontFamily = publicsansSemiBold,
+                                            color = Color("#ffffff".toColorInt()),
+                                            fontSize = 12.sp
                                         )
                                     }
-                                })
+                                }
                             }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clip(shape = RoundedCornerShape(16.dp))
-                            .padding(8.dp).height(220.dp)
-                    )
-                }
-
-                Row( verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier= Modifier.padding(top=10.dp, start = 10.dp)) {
-
-                    Image(
-                        painter=painterResource(R.drawable.star),
-                        contentDescription = null,
-                        modifier = Modifier.padding(end=10.dp).size(20.dp)
-                    )
-
-                    Spacer(modifier = Modifier.width(5.dp))
-                    Text(
-                        text = animeDetails.value?.data?.score.toString() + "/10",
-                        fontFamily = publicsansBold,
-                        maxLines = 1,
-                        color = Color("#ffffff".toColorInt())
-                    )
-                    Spacer(modifier = Modifier.weight(1f))
-
-                    Icon(
-                        painter=painterResource(R.drawable.episodes),
-                        contentDescription = null,
-                        tint = Color("#ffffff".toColorInt()),
-                        modifier = Modifier.padding(end=10.dp).size(16.dp)
-                    )
-                    Text(
-                        text = animeDetails.value?.data?.episodes.toString() + " Ep",
-                        fontFamily = publicsansBold,
-                        maxLines = 1,
-                        modifier = Modifier.padding(end=10.dp),
-                        color = Color("#ffffff".toColorInt())
-                    )
-                }
-
-                val painter =
-                    rememberAsyncImagePainter(
-                        ImageRequest.Builder(
-                            LocalContext.current
-                        )
-                            .data(data = animeDetails.value?.data?.images?.jpg?.image_url)
-                            .apply(block = fun ImageRequest.Builder.() {
-                                crossfade(true)
-                            }).build()
-                    )
-                Row(modifier=Modifier.fillMaxWidth().padding(top=10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,) {
-                    Image(
-                        painter,
-                        contentDescription = "",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .weight(0.3f).padding(start = 10.dp)
-                    )
-                    Text(
-                        text = animeDetails.value?.data?.synopsis.toString(),
-                        fontFamily = publicsansSemiBold,
-                        maxLines = 8,
-                        fontSize = 12.sp,
-                        modifier = Modifier.weight(0.7f).padding(start = 10.dp, end = 10.dp),
-                        color = Color("#ffffff".toColorInt())
-                    )
-                }
-                Row(
-                    modifier = Modifier.padding(top=10.dp)
-                        .horizontalScroll(rememberScrollState())
-                        .padding(horizontal = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    animeDetails.value?.data?.genres?.forEachIndexed { index, title ->
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier
-                                .padding(horizontal = 5.dp)
-                                .background(
-                                    color = Color("#000000".toColorInt()),
-                                    shape = RoundedCornerShape(60)
-                                )
-                                .border(
-                                    BorderStroke(1.dp, Color("#333333".toColorInt())),
-                                    RoundedCornerShape(60)
-                                )
-                        ) {
-                            Text(
-                                text = title.name,
-                                modifier = Modifier.padding(
-                                    start = 12.dp,
-                                    end = 12.dp,
-                                    top = 10.dp,
-                                    bottom = 10.dp
-                                ),
-                                fontFamily = publicsansSemiBold,
-                                color = Color("#ffffff".toColorInt()),
-                                fontSize = 12.sp
-                            )
-                        }
                     }
                 }
             }
         }
-
     }
 }
 @OptIn(ExperimentalLayoutApi::class)

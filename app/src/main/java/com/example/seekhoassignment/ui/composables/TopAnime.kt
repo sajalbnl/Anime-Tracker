@@ -5,6 +5,7 @@ import androidx.navigation.NavController
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Build
+import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
@@ -45,6 +46,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -73,6 +75,7 @@ import coil3.request.crossfade
 import com.example.seekhoassignment.data.model.Data
 import com.example.seekhoassignment.ui.activity.AnimeDetailsActivity
 import com.example.seekhoassignment.ui.vm.AnimeViewModel
+import com.example.seekhoassignment.utils.network.ApiState
 import com.example.seekhoassignment.utils.publicsansBold
 import com.example.seekhoassignment.utils.publicsansRegular
 import com.example.seekhoassignment.utils.publicsansSemiBold
@@ -81,6 +84,7 @@ import com.example.seekhoassignment.utils.publicsansSemiBold
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun TopAnime(navController: NavController) {
+    val context=LocalContext.current
     val animeViewModel = hiltViewModel<AnimeViewModel>()
     val animeList=animeViewModel.filteredAnimeList.collectAsState()
     var searchPlanText by rememberSaveable { mutableStateOf("") }
@@ -88,6 +92,7 @@ fun TopAnime(navController: NavController) {
     LaunchedEffect(Unit) {
         animeViewModel.fetchAnimeList()
     }
+
 
     Column (modifier = Modifier.fillMaxSize().background(Color("#000000".toColorInt()))){
         Card(
@@ -106,7 +111,8 @@ fun TopAnime(navController: NavController) {
                 TextField(value = searchPlanText,
                     onValueChange = {
                         searchPlanText = it
-                        animeViewModel.searchAnime(searchPlanText)
+                     //
+                                    //   animeViewModel.searchAnime(searchPlanText)
                     },
                     leadingIcon = {
                         Image(
@@ -136,23 +142,53 @@ fun TopAnime(navController: NavController) {
                     })
             }
         }
-        if (animeList.value == emptyList<Data>()) {
-            ExcitingDealsShimmerLoaderView()
-        } else {
-            LazyColumn {
-                item {
-                    FlowRow(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 20.dp)
-                    ) {
-                        animeList.value?.forEach{ anime->
-                            AnimeCard(anime)
+        animeList.value.let {
+            when(it){
+                is ApiState.Loading -> {
+                    ExcitingDealsShimmerLoaderView()
+
+                }
+
+                is ApiState.Error -> {
+                    Toast.makeText(context,"Error In Loading", Toast.LENGTH_SHORT).show()
+                }
+                is ApiState.Success -> {
+                    val animeList = remember { mutableStateOf(it.data.data) }
+                    val filteredAnimeList =
+                        remember { mutableStateOf(animeList.value) }
+
+                    fun filterAnime(text: String): List<Data> {
+                        return if (text.isEmpty()) {
+                            animeList.value
+                        } else {
+                            animeList.value.filter { anime ->
+                                anime.title.contains(text, ignoreCase = true)
+                            }
+                        }
+                    }
+
+                    LaunchedEffect(searchPlanText) {
+                        filteredAnimeList.value = filterAnime(searchPlanText)
+                    }
+
+                    LazyColumn {
+                        item {
+
+                            FlowRow(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 20.dp)
+                            ) {
+                                filteredAnimeList.value.forEach{ anime->
+                                    AnimeCard(anime)
+                                }
+                            }
                         }
                     }
                 }
             }
         }
+
     }
 }
 
