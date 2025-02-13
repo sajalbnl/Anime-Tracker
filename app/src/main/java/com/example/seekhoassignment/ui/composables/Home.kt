@@ -92,7 +92,6 @@ fun Home(navController: NavController) {
                 fontSize = 12.sp
             )
         }
-
     }
 }
 

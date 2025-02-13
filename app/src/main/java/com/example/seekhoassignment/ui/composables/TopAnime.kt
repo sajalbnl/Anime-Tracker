@@ -93,7 +93,6 @@ fun TopAnime(navController: NavController) {
         animeViewModel.fetchAnimeList()
     }
 
-
     Column (modifier = Modifier.fillMaxSize().background(Color("#000000".toColorInt()))){
         Card(
             border = BorderStroke(
@@ -111,8 +110,6 @@ fun TopAnime(navController: NavController) {
                 TextField(value = searchPlanText,
                     onValueChange = {
                         searchPlanText = it
-                     //
-                                    //   animeViewModel.searchAnime(searchPlanText)
                     },
                     leadingIcon = {
                         Image(
@@ -188,7 +185,6 @@ fun TopAnime(navController: NavController) {
                 }
             }
         }
-
     }
 }
 
@@ -207,8 +203,6 @@ fun AnimeCard(anime: Data?){
                     crossfade(true)
                 }).build()
         )
-
-
     Card(
         modifier = Modifier.width(itemSize)
             .padding(8.dp).clickable(){
@@ -259,7 +253,6 @@ fun AnimeCard(anime: Data?){
                         maxLines = 1,
                         color = Color("#ffffff".toColorInt())
                     )
-
                 }
             }
             Spacer(modifier = Modifier.height(10.dp))
@@ -274,7 +267,6 @@ fun AnimeCard(anime: Data?){
                 fontFamily = publicsansSemiBold,
             )
         }
-
     }
 }
 
